@@ -5,7 +5,6 @@ import com.api.mrr.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -30,7 +29,7 @@ public class UserService {
     public void sendVerificationEmail(User user, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException{
         String siteURL = getSiteURL(request);
         String toAddress = user.getUserEmail();
-        String fromAddress = "Your email address";
+        String fromAddress = "poramet.work@gmail.com";
         String senderName = "Your company name";
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
@@ -46,14 +45,28 @@ public class UserService {
         helper.setTo(toAddress);
         helper.setSubject(subject);
 
-        content = content.replace("[[name]]", user.getUserFName());
-        String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+        content = content.replace("[[name]]", user.getUserEmail());
+        String verifyURL = siteURL + "/api/auth/verify?code=" + user.getVerificationCode();
 
         content = content.replace("[[URL]]", verifyURL);
 
         helper.setText(content, true);
 
         mailSender.send(message);
+    }
+
+    public boolean verify(String verificationCode) {
+        User user = this.userRepository.findByVerificationCode(verificationCode);
+
+        if (user == null || user.isEnabled()) {
+            return false;
+        } else {
+            user.setVerificationCode(null);
+            user.setEnabled(true);
+            this.userRepository.save(user);
+            return true;
+        }
+
     }
 }
 

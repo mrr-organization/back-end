@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,10 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = "user_email"),
                 @UniqueConstraint(columnNames = "user_phone")
         })
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_no")
@@ -34,7 +38,7 @@ public class User {
     private String userPhone;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(	name = "mrr_user_roles",
+    @JoinTable(	name = "mrr_Registration",
             joinColumns = @JoinColumn(name = "user_no"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
