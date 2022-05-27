@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public void sendVerificationEmail(User user, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException{
-        String siteURL = getSiteURL(request);
+        String siteURL = "https://www.k-mutt-mrr-service.systems/be-path/";
         String toAddress = user.getUserEmail();
         String fromAddress = "poramet.work@gmail.com";
         String senderName = "Your company name";
